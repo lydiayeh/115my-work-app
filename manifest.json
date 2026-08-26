@@ -1,0 +1,9 @@
+{
+  "name":"我的工作作業",
+  "short_name":"工作作業",
+  "start_url":"./index.html",
+  "display":"standalone",
+  "background_color":"#faf9fb",
+  "theme_color":"#f4dce5",
+  "icons":[]
+}

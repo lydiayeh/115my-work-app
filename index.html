@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4dce5">
+<link rel="manifest" href="manifest.json">
+<title>我的工作作業</title>
+<style>
+:root{--pink:#c87896;--soft:#f9eaf0;--bg:#faf9fb;--text:#343238;--muted:#999;--line:#eee8ec}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(#fff8fa 0%,#faf9fb 100%);padding:18px 16px 10px;border-bottom:1px solid #f2edf0}
+.head{display:flex;justify-content:space-between;align-items:center}.head h1{font-size:26px;margin:0}.date{font-size:13px;color:var(--muted);margin-top:4px}
+.iconbtn{border:0;background:#fff;border-radius:14px;width:42px;height:42px;box-shadow:0 2px 10px #0000000b;font-size:20px}
+.tabs{display:flex;gap:7px;overflow:auto;padding:14px 0 3px}.tab{border:0;background:#f1eef1;padding:9px 14px;border-radius:20px;white-space:nowrap;color:#666}.tab.active{background:#f2dce5;color:#a54f70;font-weight:700}
+main{padding:12px 14px 110px}.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px}.stat b{font-size:24px}.stat small{display:block;color:#999;margin-top:2px}
+.section{font-size:21px;font-weight:750;margin:14px 4px 9px}.section span{font-size:13px;color:#aaa;font-weight:400}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px;margin:9px 0;box-shadow:0 2px 9px #00000008;display:flex;gap:11px;align-items:flex-start}
+.check{width:28px;height:28px;border:2px solid #ddd;border-radius:9px;background:#fff;flex:none;position:relative}.check.done{background:#d79bb1;border-color:#d79bb1}.check.done:after{content:"✓";position:absolute;color:#fff;font-size:18px;left:4px;top:-1px}
+.body{flex:1;min-width:0}.title{font-size:17px;font-weight:700;line-height:1.35}.doneText{text-decoration:line-through;color:#aaa}.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.tag{background:#faeef2;color:#a75d77;border-radius:8px;padding:4px 7px;font-size:11px}.tag.gray{background:#f2f1f2;color:#777}.tag.warn{background:#fff0e5;color:#a86838}
+.more{border:0;background:#f7f4f6;width:34px;height:34px;border-radius:11px;color:#888}.progress{height:5px;background:#eee9ec;border-radius:9px;margin-top:9px;overflow:hidden}.progress i{display:block;height:100%;background:#d79bb1}
+.fab{position:fixed;right:18px;bottom:22px;width:60px;height:60px;border:0;border-radius:50%;background:var(--pink);color:#fff;font-size:32px;box-shadow:0 9px 25px #9d557160;z-index:30}
+.empty{text-align:center;color:#aaa;padding:55px 20px}.empty button{margin-top:12px;border:0;background:var(--soft);color:#a34e70;border-radius:12px;padding:10px 15px}
+.sheet{position:fixed;inset:0;background:#0006;z-index:50;display:none;align-items:flex-end}.sheet.show{display:flex}.panel{background:#fff;width:100%;max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:20px 17px 30px}.panel h2{margin:0 0 14px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{margin:10px 0}.field label{display:block;font-size:13px;color:#777;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid #e6e0e4;border-radius:12px;padding:10px;background:#fff;outline:none}.field textarea{min-height:75px;resize:vertical}.actions{display:flex;gap:9px;margin-top:16px}.primary,.secondary,.danger{flex:1;border:0;border-radius:13px;padding:12px}.primary{background:var(--pink);color:#fff}.secondary{background:#f2eef1}.danger{background:#fff0f0;color:#b34e4e}.subtasks{margin-top:8px}.subrow{display:flex;gap:7px;margin:7px 0}.subrow input{flex:1}.close{float:right;border:0;background:#f4f1f3;border-radius:12px;width:36px;height:36px}
+.search{background:#fff;border:1px solid var(--line);border-radius:13px;padding:10px 12px;width:100%;margin:3px 0 10px;outline:none}
+.help{font-size:12px;color:#888;line-height:1.5;background:#faf5f7;border-radius:12px;padding:10px;margin-top:10px}
+@media(min-width:700px){main{max-width:680px;margin:auto}.top{padding-left:calc((100% - 680px)/2);padding-right:calc((100% - 680px)/2)}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="head"><div><h1>我的工作作業</h1><div class="date" id="today"></div></div><button class="iconbtn" onclick="openSettings()">⚙️</button></div>
+ <div class="tabs">
+  <button class="tab active" data-view="today">☀️ 今日</button>
+  <button class="tab" data-view="daily">🌱 每日</button>
+  <button class="tab" data-view="weekly">📅 每週</button>
+  <button class="tab" data-view="monthly">🗓️ 每月</button>
+  <button class="tab" data-view="todo">✨ 臨時</button>
+ </div>
+</header>
+<main>
+<input class="search" id="search" placeholder="🔎 搜尋工作..." oninput="render()">
+<div id="app"></div>
+</main>
+<button class="fab" onclick="openEditor()">＋</button>
+
+<div class="sheet" id="editor">
+ <div class="panel">
+  <button class="close" onclick="closeSheet('editor')">✕</button><h2 id="editorTitle">新增工作</h2>
+  <div class="field"><label>工作名稱</label><input id="fTitle" placeholder="例如：出勤紀錄核對"></div>
+  <div class="row">
+   <div class="field"><label>類型</label><select id="fType"><option value="daily">每日</option><option value="weekly">每週</option><option value="monthly">每月</option><option value="todo">臨時</option></select></div>
+   <div class="field"><label>提醒時間</label><input id="fTime" type="time"></div>
+  </div>
+  <div class="field"><label>重複／日期</label><select id="fRepeat"><option value="daily">每天</option><option value="monfri">週一～週五</option><option value="weekly">每週</option><option value="monthly1">每月1日</option><option value="monthly5">每月5日</option><option value="monthend">每月最後一天</option><option value="once">指定日期／臨時</option></select></div>
+  <div class="field" id="dateField"><label>指定日期</label><input id="fDate" type="date"></div>
+  <div class="field"><label>備註／負責人</label><input id="fNote" placeholder="例如：找 Grace"></div>
+  <div class="field"><label>詳細說明</label><textarea id="fDesc" placeholder="可寫工作內容或注意事項"></textarea></div>
+  <div class="field"><label>子步驟</label><div class="subtasks" id="subs"></div><button class="secondary" onclick="addSubInput()">＋ 新增步驟</button></div>
+  <div class="help">提醒：這個版本會記錄「提醒時間」，但真正的 iPhone 推播通知需要把 App 部署到 HTTPS 網站後再啟用通知權限。</div>
+  <div class="actions"><button class="secondary" onclick="closeSheet('editor')">取消</button><button class="primary" onclick="saveTask()">儲存</button></div>
+ </div>
+</div>
+
+<div class="sheet" id="detail">
+ <div class="panel" id="detailPanel"></div>
+</div>
+
+<div class="sheet" id="settings">
+ <div class="panel">
+  <button class="close" onclick="closeSheet('settings')">✕</button><h2>設定</h2>
+  <div class="field"><label>資料管理</label><button class="secondary" onclick="exportData()">⬇️ 匯出工作資料</button></div>
+  <div class="field"><label>匯入資料</label><input type="file" id="importFile" accept=".json" onchange="importData(event)"></div>
+  <div class="help">資料目前儲存在這台手機的瀏覽器中。建議偶爾匯出備份。</div>
+  <div class="actions"><button class="danger" onclick="resetAll()">清除全部資料</button></div>
+ </div>
+</div>
+
+<script>
+const STORE="myWorkAppFullV2";
+let state=JSON.parse(localStorage.getItem(STORE)||"null")||{
+ tasks:[
+  {id:id(),title:"公文／信箱確認",type:"daily",repeat:"daily",time:"08:10",note:"每日",desc:"確認新公文、Email、待處理事項。",subs:[]},
+  {id:id(),title:"今日收件處理",type:"daily",repeat:"daily",time:"09:00",note:"",desc:"",subs:[]},
+  {id:id(),title:"系統資料更新",type:"daily",repeat:"daily",time:"10:30",note:"",desc:"",subs:[]},
+  {id:id(),title:"下班前確認今日工作",type:"daily",repeat:"monfri",time:"16:40",note:"收尾",desc:"確認是否有未完成或需要交接的事項。",subs:[]},
+  {id:id(),title:"整理本週待辦",type:"weekly",repeat:"weekly",time:"08:20",note:"每週一",desc:"",subs:[]},
+  {id:id(),title:"確認本週未完成事項",type:"weekly",repeat:"weekly",time:"16:30",note:"每週五",desc:"",subs:[]},
+  {id:id(),title:"業績核對（受訂／交貨）",type:"monthly",repeat:"monthly1",time:"09:00",note:"找 Grace",desc:"",subs:["受訂資料確認","交貨資料確認","找 Grace 確認"]},
+  {id:id(),title:"提醒同事完成公司內網",type:"monthly",repeat:"monthly1",time:"09:30",note:"",desc:"",subs:[]},
+  {id:id(),title:"差旅申請與款項",type:"monthly",repeat:"monthly1",time:"10:00",note:"",desc:"",subs:[]},
+  {id:id(),title:"加班申請文件",type:"monthly",repeat:"monthly1",time:"10:00",note:"",desc:"",subs:[]},
+  {id:id(),title:"出勤紀錄核對",type:"monthly",repeat:"monthly1",time:"11:00",note:"找 Grace",desc:"",subs:[]},
+  {id:id(),title:"月會會議紀錄",type:"monthly",repeat:"monthly1",time:"14:00",note:"",desc:"",subs:[]},
+  {id:id(),title:"9樓影印機費用申請",type:"monthly",repeat:"monthly1",time:"15:00",note:"",desc:"",subs:[]}
+ ],done:{},subDone:{}
+};
+let view="today", editId=null;
+function id(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function save(){localStorage.setItem(STORE,JSON.stringify(state))}
+function iso(d){return d.toISOString().slice(0,10)}
+function today(){return iso(new Date())}
+function key(t){return t.id+"@"+today()}
+function active(t){
+ const d=new Date(), day=d.getDay(), date=d.getDate(), last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+ if(t.repeat==="daily")return true;
+ if(t.repeat==="monfri")return day>=1&&day<=5;
+ if(t.repeat==="weekly")return day===1;
+ if(t.repeat==="monthly1")return date===1;
+ if(t.repeat==="monthly5")return date===5;
+ if(t.repeat==="monthend")return date===last;
+ if(t.repeat==="once")return t.date===today();
+ return false;
+}
+function done(t){return !!state.done[key(t)]}
+function setDone(t,v){state.done[key(t)]=v;save();render()}
+function filtered(){
+ let a=state.tasks.filter(t=>{
+  if(view==="today")return active(t);
+  if(view==="todo")return t.type==="todo";
+  return t.type===view;
+ });
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ if(q)a=a.filter(t=>(t.title+t.note+t.desc).toLowerCase().includes(q));
+ return a.sort((a,b)=>(a.time||"99:99").localeCompare(b.time||"99:99"));
+}
+function render(){
+ document.getElementById("today").textContent=new Date().toLocaleDateString("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+ const a=filtered(), app=document.getElementById("app");
+ let complete=a.filter(done).length;
+ app.innerHTML=`<div class="summary"><div class="stat"><b>${complete}/${a.length}</b><small>今日完成</small></div><div class="stat"><b>${a.length?Math.round(complete/a.length*100):0}%</b><small>完成率</small></div></div>`;
+ let title={today:"今日作業",daily:"每日作業",weekly:"每週作業",monthly:"每月作業",todo:"臨時作業"}[view];
+ app.innerHTML+=`<div class="section">${title} <span>共 ${a.length} 項</span></div>`;
+ if(!a.length){app.innerHTML+=`<div class="empty">目前沒有符合條件的工作<br><button onclick="openEditor()">＋ 新增工作</button></div>`;return}
+ a.forEach(t=>{
+  const subs=t.subs||[], sd=subs.filter((_,i)=>state.subDone[key(t)+"_"+i]).length;
+  const pct=subs.length?Math.round(sd/subs.length*100):0;
+  const c=document.createElement("div");c.className="card";
+  c.innerHTML=`<button class="check ${done(t)?"done":""}" onclick="event.stopPropagation();setDone(taskById('${t.id}'),${!done(t)})"></button>
+  <div class="body" onclick="openDetail('${t.id}')"><div class="title ${done(t)?"doneText":""}">${esc(t.title)}</div>
+  <div class="meta">${t.time?`<span class="tag">⏰ ${t.time}</span>`:""}<span class="tag gray">${repeatName(t.repeat)}</span>${t.note?`<span class="tag">${esc(t.note)}</span>`:""}</div>
+  ${subs.length?`<div class="progress"><i style="width:${pct}%"></i></div><div style="font-size:11px;color:#999;margin-top:4px">${sd}/${subs.length} 個步驟完成</div>`:""}</div>
+  <button class="more" onclick="event.stopPropagation();openEditor('${t.id}')">⋯</button>`;
+  app.appendChild(c);
+ });
+}
+function taskById(i){return state.tasks.find(t=>t.id===i)}
+function repeatName(x){return {daily:"每天",monfri:"週一～週五",weekly:"每週",monthly1:"每月1日",monthly5:"每月5日",monthend:"每月最後一天",once:"指定日期"}[x]||x}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function openEditor(i=null){
+ editId=i;document.getElementById("editor").classList.add("show");
+ const t=i?taskById(i):{title:"",type:view==="today"?"daily":view,repeat:view==="monthly"?"monthly1":view==="weekly"?"weekly":view==="todo"?"once":"daily",time:"",note:"",desc:"",subs:[]};
+ document.getElementById("editorTitle").textContent=i?"編輯工作":"新增工作";
+ fTitle.value=t.title;fType.value=t.type;fTime.value=t.time||"";fRepeat.value=t.repeat||"daily";fDate.value=t.date||today();fNote.value=t.note||"";fDesc.value=t.desc||"";
+ document.getElementById("subs").innerHTML="";(t.subs||[]).forEach(x=>addSubInput(x));
+}
+function addSubInput(v=""){const d=document.createElement("div");d.className="subrow";d.innerHTML=`<input value="${esc(v)}" placeholder="例如：資料確認"><button class="more" onclick="this.parentElement.remove()">×</button>`;document.getElementById("subs").appendChild(d)}
+function saveTask(){
+ const title=fTitle.value.trim();if(!title){alert("請輸入工作名稱");return}
+ const subs=[...document.querySelectorAll("#subs input")].map(x=>x.value.trim()).filter(Boolean);
+ let t=editId?taskById(editId):{id:id()};
+ Object.assign(t,{title,type:fType.value,repeat:fRepeat.value,time:fTime.value,note:fNote.value.trim(),desc:fDesc.value.trim(),date:fDate.value,subs});
+ if(!editId)state.tasks.push(t);save();closeSheet("editor");render();
+}
+function openDetail(i){
+ const t=taskById(i), subs=t.subs||[], sd=subs.filter((_,n)=>state.subDone[key(t)+"_"+n]).length;
+ document.getElementById("detailPanel").innerHTML=`<button class="close" onclick="closeSheet('detail')">✕</button><h2>${esc(t.title)}</h2>
+ <div class="meta"><span class="tag">${repeatName(t.repeat)}</span>${t.time?`<span class="tag">⏰ ${t.time}</span>`:""}${t.note?`<span class="tag">${esc(t.note)}</span>`:""}</div>
+ ${t.desc?`<div class="help" style="margin-top:15px">${esc(t.desc)}</div>`:""}
+ ${subs.length?`<div class="section" style="margin-top:20px">工作步驟 <span>${sd}/${subs.length}</span></div>${subs.map((s,n)=>`<div class="card" style="margin:7px 0;padding:10px"><button class="check ${state.subDone[key(t)+"_"+n]?"done":""}" onclick="toggleSub('${t.id}',${n})"></button><div class="body">${esc(s)}</div></div>`).join("")}`:""}
+ <div class="actions"><button class="secondary" onclick="closeSheet('detail');openEditor('${t.id}')">編輯</button><button class="danger" onclick="deleteTask('${t.id}')">刪除</button></div>`;
+ document.getElementById("detail").classList.add("show");
+}
+function toggleSub(i,n){const k=i+"@"+today()+"_"+n;state.subDone[k]=!state.subDone[k];save();openDetail(i);render()}
+function deleteTask(i){if(confirm("確定刪除這項工作？")){state.tasks=state.tasks.filter(t=>t.id!==i);save();closeSheet("detail");render()}}
+function closeSheet(x){document.getElementById(x).classList.remove("show")}
+function openSettings(){document.getElementById("settings").classList.add("show")}
+function exportData(){const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="我的工作作業_備份.json";a.click()}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);save();render();alert("匯入完成")}catch{alert("檔案格式不正確")}};r.readAsText(f)}
+function resetAll(){if(confirm("確定清除全部工作與紀錄？")){localStorage.removeItem(STORE);location.reload()}}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");view=b.dataset.view;render()});
+render();
+if("serviceWorker" in navigator && location.protocol!=="file:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
